@@ -16,6 +16,7 @@ public class PlayerMover : MonoBehaviour
 	public Vector2 dashVelocity = new Vector2(20, 1);
 	public float dashDuration = 0.2f;
 	public int dashes;
+	public DashTrail dashTrail;
 	private int dashesRemaining;
 
 	public Transform[] reversibles;
@@ -140,7 +141,7 @@ public class PlayerMover : MonoBehaviour
 			_velocity.y = 0;
 			dashesRemaining = dashes;
 			_animator.SetBool("dashing", false);
-			GetComponent<DashTrail>().enabled = false;
+			dashTrail.drawTrail = false;
 		}
 
 		if(VisibilityCheck())
@@ -614,7 +615,7 @@ public class PlayerMover : MonoBehaviour
 	IEnumerator DashCoroutine(Vector2 velocity, float duration)
 	{
 		//lockManualControl = true;
-		GetComponent<DashTrail>().enabled = true;
+		dashTrail.drawTrail = true;
 		_animator.SetBool("dashing", true);
 		isDashing = true;
 

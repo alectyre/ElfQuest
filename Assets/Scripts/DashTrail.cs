@@ -11,13 +11,25 @@ using System.Collections.Generic;
 public class DashTrail : MonoBehaviour
 {
 	public SpriteRenderer leadingSprite;
-
 	public float spawnInterval;
 	public float trailTime;
 	public GameObject trailObject;
 	public Color startColor = Color.white;
 	public Color endColor = Color.white;
 	public bool recolorExisting;
+	[SerializeField] private bool _drawTrail = true;
+
+	public bool drawTrail 
+	{
+		set
+		{
+			if(value != _drawTrail)
+				spawnTimer = spawnInterval;
+			_drawTrail = value;
+		}
+
+		get { return _drawTrail; }
+	}
 
 	private float spawnTimer;
 
@@ -46,36 +58,39 @@ public class DashTrail : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		spawnTimer += Time.deltaTime;
-
-		//TODO probably should spawn by distance traveled?
-		if (spawnTimer >= spawnInterval)
+		if(_drawTrail)
 		{
-			GameObject trail = GetPooledTrailObject();
+			spawnTimer += Time.deltaTime;
 
-			DashTrailObject trailObject = trail.GetComponent<DashTrailObject> ();
-
-			trailObject.Initiate (trailTime, leadingSprite.sprite, transform.position, this);
-
-			spawnTimer = 0;
-
-			trailObject.GetComponent<SpriteRenderer>().sortingOrder = -1;
-
-			for(int i = 0; i < trailObjectPool.Count; i++)
+			//TODO probably should spawn by distance traveled?
+			if(spawnTimer >= spawnInterval)
 			{
-				SpriteRenderer spriteRenderer = trailObjectPool[i].GetComponent<SpriteRenderer>();
-				spriteRenderer.sortingOrder -= 1;
+				GameObject trail = GetPooledTrailObject();
+
+				DashTrailObject trailObject = trail.GetComponent<DashTrailObject>();
+
+				trailObject.Initiate(trailTime, leadingSprite.sprite, transform.position, this);
+
+				spawnTimer = 0;
+
+				trailObject.GetComponent<SpriteRenderer>().sortingOrder = -1;
+
+				for(int i = 0; i < trailObjectPool.Count; i++)
+				{
+					SpriteRenderer spriteRenderer = trailObjectPool[i].GetComponent<SpriteRenderer>();
+					spriteRenderer.sortingOrder -= 1;
+				}
 			}
-		}
 
-		if(recolorExisting)
-		{
-			for(int i = 0; i < trailObjectPool.Count; i++)
+			if(recolorExisting)
 			{
-				DashTrailObject trailObject = trailObjectPool[i].GetComponent<DashTrailObject>();
+				for(int i = 0; i < trailObjectPool.Count; i++)
+				{
+					DashTrailObject trailObject = trailObjectPool[i].GetComponent<DashTrailObject>();
 
-				trailObject.startColor = startColor;
-				trailObject.endColor = endColor;
+					trailObject.startColor = startColor;
+					trailObject.endColor = endColor;
+				}
 			}
 		}
 	}

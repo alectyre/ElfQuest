@@ -9,6 +9,7 @@ public class PlayerRespawnerScript : MonoBehaviour {
 	public float updateFrequency;
 	public float respawnInvincibility;
 	public bool requireGrounded;
+	public TripScript tripScript;
 
 	public bool debug;
 
@@ -73,6 +74,8 @@ public class PlayerRespawnerScript : MonoBehaviour {
 		player.GetComponent<Collider2D>().enabled = true;
 		player.SetActive(true);
 				Debug.Log ("respawning");
+
+		tripScript.tripDashTrail.enabled = true;
 	}
 
 	void ClearBuffer ()

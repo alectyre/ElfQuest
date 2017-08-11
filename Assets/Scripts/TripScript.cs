@@ -3,11 +3,13 @@ using System.Collections;
 
 public class TripScript : MonoBehaviour {
 
-	private bool tripping;
+	public bool tripping { get { return _tripping; } }
+	private bool _tripping;
 
 	public GameObject player;
 
 	public Vector2 tripDashVelocity = new Vector2(22f, 1f);
+	public DashTrail tripDashTrail;
 	public float tripRunSpeed = 5f;
 	public float tripSpeedWhileAttacking = 5f;
 	public float tripJumpHeight = 1.5f;
@@ -47,16 +49,13 @@ public class TripScript : MonoBehaviour {
 
 	public void StartTripping()
 	{
-		if(tripAudioSequence != null && bgm != null)
-		{
-			tripping = true;
-			StartCoroutine(StartTrippingCoroutine());
-		}
+		_tripping = true;
+		StartCoroutine(StartTrippingCoroutine());
 	}
 
 	public void StopTripping()
 	{
-		tripping = false;
+		_tripping = false;
 	}
 
 	IEnumerator StartTrippingCoroutine()
@@ -70,11 +69,11 @@ public class TripScript : MonoBehaviour {
 		mover.runSpeed = tripRunSpeed;
 		mover.speedWhileAttacking = tripSpeedWhileAttacking;
 		mover.jumpHeight = tripJumpHeight;
+		mover.dashTrail.drawTrail = false;
+		tripDashTrail.drawTrail = true;
 
-		while(tripping)
+		while(_tripping)
 		{
-			Debug.Log("Tripping...");
-
 			if(globalFrequency <= tripFrequency * fudgeValue)
 			{
 				globalFrequency = Mathf.Lerp(globalFrequency, tripFrequency, tripAcceleration * Time.deltaTime);
@@ -94,7 +93,7 @@ public class TripScript : MonoBehaviour {
 			color.r = Mathf.Sin(red);
 			color.g = Mathf.Sin(green);
 			color.b = Mathf.Sin(blue);
-			
+
 			Camera.main.backgroundColor = color;
 
 			yield return null;
@@ -118,8 +117,6 @@ public class TripScript : MonoBehaviour {
 			{
 				globalFrequency = Mathf.Lerp(globalFrequency, 0, tripAcceleration * Time.deltaTime);
 
-				Debug.Log("Frequency down...");
-
 				if(globalFrequency <= frequencyFudge)
 					frequencyDone = true;
 			}
@@ -129,8 +126,6 @@ public class TripScript : MonoBehaviour {
 				Camera.main.backgroundColor = Color.Lerp(Camera.main.backgroundColor, originalColor, tripAcceleration * Time.deltaTime);
 
 				colorShiftCount++;
-
-				Debug.Log("Returning to normal color...");
 
 				if(colorShiftCount >= colorShiftLimit)
 					colorShiftDone = true;
@@ -143,8 +138,6 @@ public class TripScript : MonoBehaviour {
 				if(aura.emissionRate < 0)
 					aura.emissionRate = 0;
 
-				Debug.Log("Lowering emission...");
-
 				if(aura.emissionRate <= 0)
 				{
 					emissionrateDone = true;
@@ -153,6 +146,8 @@ public class TripScript : MonoBehaviour {
 					mover.runSpeed = 3;
 					mover.speedWhileAttacking = 2;
 					mover.jumpHeight = 1.1f;
+					mover.dashTrail.drawTrail = true;
+					tripDashTrail.drawTrail = false;
 				}
 			}
 

@@ -8,6 +8,7 @@ public class WaterScript : MonoBehaviour {
 
 	public GameObject splashPrefab;
 	public string behindWaterLayer;
+	public TripScript tripScript;
 
 	Transform[] splashPool;
 
@@ -40,7 +41,8 @@ public class WaterScript : MonoBehaviour {
 		if(target)
 		{
 			target.GetComponent<SpriteRenderer> ().sortingLayerName = behindWaterLayer;
-			target.GetComponent<DashTrail> ().enabled = false;
+			target.GetComponent<PlayerMover>().dashTrail.drawTrail = false;
+			tripScript.tripDashTrail.enabled = false;
 
 			float surfaceHeight = GetComponent<SpriteRenderer>().bounds.size.y/2 + transform.position.y;
 
